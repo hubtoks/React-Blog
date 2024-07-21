@@ -1,13 +1,13 @@
 //登录页面
 import { Card,Form, Input, Button} from "antd";
-import '@/pages/Login/index.scss'
+import './index.scss'
 
 const Login = () => {
     const onFinish = (values) => console.log(values);
     return (
       <div className="login">
         <Card className="login-container" title="欢迎登录">
-        <Form onFinish={onFinish}>
+        <Form onFinish={onFinish}>{/* 写好的直接拿value */}
             <Form.Item 
             name="mobile" 
             rules={[
