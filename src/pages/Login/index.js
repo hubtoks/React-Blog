@@ -1,9 +1,44 @@
-const Login = () =>{
+//登录页面
+import { Card,Form, Input, Button} from "antd";
+import '@/pages/Login/index.scss'
+
+const Login = () => {
+    const onFinish = (values) => console.log(values);
     return (
-        <div>
-            <h1>Login</h1>
-            <p>Login</p>
-        </div>
+      <div className="login">
+        <Card className="login-container" title="欢迎登录">
+        <Form onFinish={onFinish}>
+            <Form.Item 
+            name="mobile" 
+            rules={[
+              {
+                required: true,
+                message: "请输入手机号",
+              },
+              { pattern: /^1[3-9]\d{9}$/, message: "手机号格式不正确" },
+            ]}>
+              <Input className="input" size="large" placeholder="请输入手机号" />
+            </Form.Item>
+            <Form.Item
+            name="code" 
+            rules={[
+              {
+                required: true,
+                message: "请输入验证码",
+              },
+            ]}>
+              <Input className="input" size="large" placeholder="请输入验证码"  />
+            </Form.Item>
+            <Form.Item>
+              <Button className="button" type="primary" htmlType="submit" size="large" block>
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </div>
     )
-}
-export default Login; //exporting the component
+  }
+  
+ 
+export default Login;
