@@ -1,3 +1,12 @@
+//修改的是public里的index.html的id=#root,想修改id为root的div的样式,需要修改其上的html,body
 
 
+html,body{
+    margin:0;
+    height: 100%;
+}
 
+
+#root {  
+    height: 100%;
+}
