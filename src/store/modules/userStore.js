@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { request } from "@/utils";
 import { setToken as _setToken, getToken,removeToken} from "@/utils";
+import {loginAPI,getProfileAPI} from "@/apis/user"
 
 const userStore = createSlice({  
     name: "user",
@@ -31,7 +31,7 @@ const {setToken, setUserInfo,clearUserInfo} = userStore.actions
 const fetchLogin = (loginForm) => {
     return async (dispatch) => {
       //请求Token
-        const res = await request.post("/authorizations", loginForm);
+        const res = await loginAPI(loginForm) //原本为request.post("/authorizations", loginForm);  封装到apis里进行统一管理
       //将Token传入reducer里的action.payload
         dispatch(setToken(res.data.token));  
     }
@@ -39,7 +39,7 @@ const fetchLogin = (loginForm) => {
 //获取用户信息
 const fetchUserInfo = () => {
   return async (dispatch) => {
-      const res = await request.get("/user/profile");
+      const res = await getProfileAPI()  //同上已经封装
       dispatch(setUserInfo(res.data));  
   }
 }
