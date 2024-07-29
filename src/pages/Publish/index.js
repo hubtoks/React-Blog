@@ -7,7 +7,8 @@ import {
     Input,
     Upload,
     Space,
-    Select
+    Select,
+    message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
@@ -16,9 +17,10 @@ import './index.scss'
 import ReactQuill from 'react-quill' //富文本组件
 import 'react-quill/dist/quill.snow.css' //富文本组件配套样式
 
-import { getChannelAPI } from "@/apis/article"  //这个{}表示按需引入
+import { getChannelAPI, createArticleAPI } from "@/apis/article"  //这个{}表示按需引入
 
 import { useState, useEffect } from 'react'
+
 
 const { Option } = Select
 
@@ -31,6 +33,35 @@ const Publish = () => {
         }
         getChannelList()
     }, [])
+
+    const onSubmit = (formValue) => {
+        if(fileList.length !== imageType) return message.warning('请上传对应数量的图片')
+        const { title, channel_id, content } = formValue
+        const params = {
+            title,
+            content,
+            cover: {
+                type: imageType,  //封面模式
+                images: fileList.map(item => item.response.data.url)  //利用map的数组映射，将接口所需的url作为数组上传
+            },
+            channel_id,
+        }
+        createArticleAPI(params)
+
+    }
+
+    //接收上传图片的回调信息
+    const [fileList, setFileList] = useState([])
+    const onUploadChange = (value) => {
+        setFileList(value.fileList)
+        console.log(fileList)
+    }
+
+    //传图选项
+    const [imageType, setImageType] = useState(0)
+    const onTypeChange = (e) => {
+        setImageType(e.target.value)
+    }
 
     return (
         <div className="publish">
@@ -46,7 +77,8 @@ const Publish = () => {
                 <Form
                     labelCol={{ span: 4 }}
                     wrapperCol={{ span: 16 }}
-                    initialValues={{ type: 1 }}
+                    initialValues={{ type: 0 }}
+                    onFinish={onSubmit}
                 >
                     <Form.Item
                         label="标题"
@@ -67,6 +99,29 @@ const Publish = () => {
                                 </Option>
                             ))}
                         </Select>
+                    </Form.Item>
+                    <Form.Item label="封面">
+                        <Form.Item name="type">
+                            <Radio.Group onChange={onTypeChange}>   {/* onChange里的e有信息 */}
+                                <Radio value={1}>单图</Radio>
+                                <Radio value={3}>三图</Radio>
+                                <Radio value={0}>无图</Radio>
+                            </Radio.Group>
+                        </Form.Item>
+                        {imageType > 0 &&
+                            <Upload   //上传图片组件
+                                listType="picture-card"
+                                showUploadList   //多个上传列表
+                                action={'http://geek.itheima.net/v1_0/upload'}  //接收图片，返还图片信息的接口
+                                name="image"   //接口里叫image
+                                onChange={onUploadChange}
+                                maxCount={imageType}   //最多上传几张
+                            >
+                                <div style={{ marginTop: 8 }}>
+                                    <PlusOutlined />
+                                </div>
+                            </Upload>}
+
                     </Form.Item>
                     <Form.Item
                         label="内容"
