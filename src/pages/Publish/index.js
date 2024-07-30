@@ -17,22 +17,15 @@ import './index.scss'
 import ReactQuill from 'react-quill' //富文本组件
 import 'react-quill/dist/quill.snow.css' //富文本组件配套样式
 
-import { getChannelAPI, createArticleAPI } from "@/apis/article"  //这个{}表示按需引入
-
-import { useState, useEffect } from 'react'
+import {  createArticleAPI } from "@/apis/article"  //这个{}表示按需引入
+import { useChannel } from '@/hooks/useChannal'  //引入自定义hook，获取频道列表
+import { useState } from 'react'
 
 
 const { Option } = Select
 
 const Publish = () => {
-    const [channelList, setChannelList] = useState([])
-    useEffect(() => {
-        const getChannelList = async () => {   //箭头函数前面是参数后面是函数体，整体可以赋值给一个变量
-            const res = await getChannelAPI()
-            setChannelList(res.data.channels)
-        }
-        getChannelList()
-    }, [])
+    const {channelList} = useChannel() //结构出其中的频道列表用户渲染
 
     const onSubmit = (formValue) => {
         if(fileList.length !== imageType) return message.warning('请上传对应数量的图片')
