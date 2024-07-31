@@ -82,7 +82,7 @@ const Article = () => {
         page:1,
         per_page: 5
     })
-
+    //提交表单，获取筛选信息
     const onFinish = (formValue) => {
         setFilter({
             ...filter,
@@ -105,6 +105,14 @@ const Article = () => {
         }
         getArticleList()
     },[filter])
+
+    //分页
+    const onPageChange = (page) => {
+        setFilter({
+            ...filter,
+            page
+        })
+    }
 
     return (
         <div>
@@ -150,7 +158,10 @@ const Article = () => {
                 </Form>
             </Card>
             <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-                <Table rowKey="id" columns={columns} dataSource={articleList} />{/*只用传入columns列名和数据即可渲染*/}
+                <Table rowKey="id" columns={columns} dataSource={articleList} pagination={{     //只用传入columns列名和数据即可渲染表格
+                    total:count,
+                    pageSize:filter.per_page,
+                    onChange:onPageChange}} />
             </Card>
         </div>
     )
