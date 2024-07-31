@@ -72,6 +72,26 @@ const Article = () => {
             }
         }
     ]
+
+    //获取筛选信息
+    const [filter, setFilter] = useState({ //默认为空，表示获取所有文章
+        status: '',
+        channel_id: '',
+        begin_pubdate: '',
+        end_pubdate: '',
+        page:1,
+        per_page: 5
+    })
+
+    const onFinish = (formValue) => {
+        setFilter({
+            ...filter,
+            status: formValue.status,
+            channel_id: formValue.channel_id,
+            begin_pubdate: formValue.date ? formValue.date[0].format('YYYY-MM-DD') : '',
+            end_pubdate: formValue.date ? formValue.date[1].format('YYYY-MM-DD') : ''
+        })
+    }
     
 
     // 获取文章列表
@@ -79,12 +99,12 @@ const Article = () => {
     const [count, setCount] = useState(0)
     useEffect(() => {
         async function getArticleList() {
-            const res = await getArticleListAPI()
+            const res = await getArticleListAPI(filter)  
             setArticleList(res.data.results)
             setCount(res.data.total_count)
         }
         getArticleList()
-    },[])
+    },[filter])
 
     return (
         <div>
@@ -97,7 +117,7 @@ const Article = () => {
                 }
                 style={{ marginBottom: 20 }}
             >
-                <Form initialValues={{ status: '' }}>
+                <Form initialValues={{ status: '' }} onFinish={onFinish}>
                     <Form.Item label="状态" name="status">
                         <Radio.Group>
                             <Radio value={''}>全部</Radio>
@@ -130,7 +150,7 @@ const Article = () => {
                 </Form>
             </Card>
             <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-                <Table rowKey="id" columns={columns} dataSource={articleList} />
+                <Table rowKey="id" columns={columns} dataSource={articleList} />{/*只用传入columns列名和数据即可渲染*/}
             </Card>
         </div>
     )
