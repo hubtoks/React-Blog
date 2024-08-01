@@ -17,7 +17,7 @@ import './index.scss'
 import ReactQuill from 'react-quill' //富文本组件
 import 'react-quill/dist/quill.snow.css' //富文本组件配套样式
 
-import { createArticleAPI, getArticleDetailAPI } from "@/apis/article"  //这个{}表示按需引入
+import { createArticleAPI, getArticleDetailAPI,updateArticleAPI } from "@/apis/article"  //这个{}表示按需引入
 import { useChannel } from '@/hooks/useChannal'  //引入自定义hook，获取频道列表
 import { useState, useEffect } from 'react'
 
@@ -37,12 +37,25 @@ const Publish = () => {
             content,
             cover: {
                 type: imageType,  //封面模式
-                images: fileList.map(item => item.response.data.url)  //利用map的数组映射，将接口所需的url作为数组上传
+                images: fileList.map(item => {
+                    if(item.response) {  //由于回填的图片url与上传的图片url在对象里的存储位置不同，所以需要判断
+                        return item.response.data.url  
+                    }else{
+                        return item.url  
+                    }
+                })  //利用map的数组映射，将接口所需的url作为数组上传
             },
             channel_id,
         }
-        createArticleAPI(params)
-        message.success('发布成功')
+        if (articleId) { //编辑更新接口
+            updateArticleAPI({...params, id: articleId})
+            message.success('编辑成功')
+        }else { //新增接口
+            createArticleAPI(params)
+            message.success('发布成功')
+        }
+        
+        
 
     }
 
@@ -86,7 +99,7 @@ const Publish = () => {
                 title={
                     <Breadcrumb items={[
                         { title: <Link to={'/'}>首页</Link> },
-                        { title: '发布文章' },
+                        { title: `${articleId ? '编辑' : '发布'}文章` },
                     ]}
                     />
                 }
@@ -157,7 +170,7 @@ const Publish = () => {
                     <Form.Item wrapperCol={{ offset: 4 }}>
                         <Space>
                             <Button size="large" type="primary" htmlType="submit">
-                                发布文章
+                                {articleId ? '编辑文章' :'发布文章'}
                             </Button>
                         </Space>
                     </Form.Item>
