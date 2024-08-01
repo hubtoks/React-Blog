@@ -1,6 +1,6 @@
 //筛选页面依赖
 import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select,Popconfirm,message } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 
 //筛选列表结果依赖
@@ -8,9 +8,9 @@ import { Table, Tag, Space } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import img404 from '@/assets/error.png'
 
-import { getArticleListAPI } from '@/apis/article'
+import { getArticleListAPI,delArticleAPI } from '@/apis/article'
 import { useChannel } from '@/hooks/useChannal'  //引入自定义hook，获取频道列表
-import { useEffect,useState } from 'react'
+import { useEffect, useState } from 'react'
 
 
 
@@ -61,12 +61,19 @@ const Article = () => {
                 return (
                     <Space size="middle">
                         <Button type="primary" shape="circle" icon={<EditOutlined />} />
-                        <Button
-                            type="primary"
-                            danger
-                            shape="circle"
-                            icon={<DeleteOutlined />}
-                        />
+                        <Popconfirm
+                            title="确认删除该条文章吗?"
+                            onConfirm={() => onDelArticle(data)}
+                            okText="确认"
+                            cancelText="取消"
+                        >
+                            <Button
+                                type="primary"
+                                danger
+                                shape="circle"
+                                icon={<DeleteOutlined />}
+                            />
+                        </Popconfirm>
                     </Space>
                 )
             }
@@ -79,7 +86,7 @@ const Article = () => {
         channel_id: '',
         begin_pubdate: '',
         end_pubdate: '',
-        page:1,
+        page: 1,
         per_page: 5
     })
     //提交表单，获取筛选信息
@@ -92,19 +99,19 @@ const Article = () => {
             end_pubdate: formValue.date ? formValue.date[1].format('YYYY-MM-DD') : ''
         })
     }
-    
 
-    // 获取文章列表
+
+    //获取文章列表
     const [articleList, setArticleList] = useState([])
     const [count, setCount] = useState(0)
     useEffect(() => {
         async function getArticleList() {
-            const res = await getArticleListAPI(filter)  
+            const res = await getArticleListAPI(filter)
             setArticleList(res.data.results)
             setCount(res.data.total_count)
         }
         getArticleList()
-    },[filter])
+    }, [filter])
 
     //分页
     const onPageChange = (page) => {
@@ -112,6 +119,17 @@ const Article = () => {
             ...filter,
             page
         })
+    }
+
+    //删除文章
+    const onDelArticle = async (data) => {
+        await delArticleAPI(data.id)
+        setFilter({
+            ...filter,
+            page: 1
+        })
+        message.success('删除成功')
+    
     }
 
     return (
@@ -159,9 +177,10 @@ const Article = () => {
             </Card>
             <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
                 <Table rowKey="id" columns={columns} dataSource={articleList} pagination={{     //只用传入columns列名和数据即可渲染表格
-                    total:count,
-                    pageSize:filter.per_page,
-                    onChange:onPageChange}} />
+                    total: count,
+                    pageSize: filter.per_page,
+                    onChange: onPageChange
+                }} />
             </Card>
         </div>
     )

@@ -40,6 +40,7 @@ const Publish = () => {
             channel_id,
         }
         createArticleAPI(params)
+        message.success('发布成功')
 
     }
 
