@@ -1,5 +1,5 @@
 //筛选页面依赖
-import { Link } from 'react-router-dom'
+import { Link,useNavigate } from 'react-router-dom'
 import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select,Popconfirm,message } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 
@@ -19,6 +19,7 @@ const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
+    const navigate = useNavigate()
     const { channelList } = useChannel() //结构出其中的频道列表用户渲染
     const columns = [
         {
@@ -59,8 +60,8 @@ const Article = () => {
             title: '操作',
             render: data => {
                 return (
-                    <Space size="middle">
-                        <Button type="primary" shape="circle" icon={<EditOutlined />} />
+                    <Space size="middle">                                      {/* 此下的箭头函数保证点击后再执行，而不是渲染完就执行 */}
+                        <Button type="primary" shape="circle" icon={<EditOutlined />} onClick={()=>navigate(`/publish?id=${data.id}`)}/>  
                         <Popconfirm
                             title="确认删除该条文章吗?"
                             onConfirm={() => onDelArticle(data)}
@@ -125,7 +126,7 @@ const Article = () => {
     const onDelArticle = async (data) => {
         await delArticleAPI(data.id)
         setFilter({
-            ...filter,
+            ...filter,   //useEffect中，filter作为参数变化则重新渲染
             page: 1
         })
         message.success('删除成功')
@@ -169,7 +170,7 @@ const Article = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" style={{ marginLeft: 40 }}>
+                        <Button type="primary" htmlType="submit" style={{ marginLeft: 40 }} >
                             筛选
                         </Button>
                     </Form.Item>

@@ -11,24 +11,26 @@ import {
     message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 
 import ReactQuill from 'react-quill' //富文本组件
 import 'react-quill/dist/quill.snow.css' //富文本组件配套样式
 
-import {  createArticleAPI } from "@/apis/article"  //这个{}表示按需引入
+import { createArticleAPI, getArticleDetailAPI } from "@/apis/article"  //这个{}表示按需引入
 import { useChannel } from '@/hooks/useChannal'  //引入自定义hook，获取频道列表
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 const { Option } = Select
 
 const Publish = () => {
-    const {channelList} = useChannel() //结构出其中的频道列表用户渲染
+    const [searchParams] = useSearchParams()
+    const articleId = searchParams.get('id') //获取路由参数中的id
+    const { channelList } = useChannel() //结构出其中的频道列表用户渲染
 
     const onSubmit = (formValue) => {
-        if(fileList.length !== imageType) return message.warning('请上传对应数量的图片')
+        if (fileList.length !== imageType) return message.warning('请上传对应数量的图片')
         const { title, channel_id, content } = formValue
         const params = {
             title,
@@ -57,6 +59,27 @@ const Publish = () => {
         setImageType(e.target.value)
     }
 
+    //编辑跳转时回填文章内容
+    const [form] = Form.useForm() //使用antd的form组件,可直接将表单数据存入form中(form.setFieldsValue(res.data)),再将form绑定到form组件上即可
+    
+        useEffect(() => {
+            if (articleId) {
+            async function getArticleDetail() {
+                const {data} = await getArticleDetailAPI(articleId)
+                const {cover} = data
+               
+                form.setFieldsValue({
+                    ...data,
+                    type: cover.type,
+                })
+                setImageType(cover.type)
+                setFileList(cover.images.map(url => ({ url })))//将接口所需的url
+            }
+            getArticleDetail()
+        }
+        }, [articleId, form])
+    
+
     return (
         <div className="publish">
             <Card
@@ -73,6 +96,7 @@ const Publish = () => {
                     wrapperCol={{ span: 16 }}
                     initialValues={{ type: 0 }}
                     onFinish={onSubmit}
+                    form={form}
                 >
                     <Form.Item
                         label="标题"
@@ -110,6 +134,7 @@ const Publish = () => {
                                 name="image"   //接口里叫image
                                 onChange={onUploadChange}
                                 maxCount={imageType}   //最多上传几张
+                                fileList={fileList}   //绑定图片列表，接收时用
                             >
                                 <div style={{ marginTop: 8 }}>
                                     <PlusOutlined />
