@@ -9,7 +9,7 @@ import router from '@/router'
 //1.根域名配置
 //2.超时时间
 const request = axios.create({
-  baseURL: 'http://geek.itheima.net/v1_0', // 基础url，解决跨域，部署项目时，需要根据实际情况修改
+  baseURL: 'https://geek.itheima.net/v1_0', // 基础url，解决跨域，部署项目时，需要根据实际情况修改
   timeout: 5000 // 超时时间
 })
 
