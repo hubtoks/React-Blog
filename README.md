@@ -1,10 +1,16 @@
-# Getting Started with Create React App
+# 本项目使用Create React App进行初始化
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## 如何使用？
+### `方法一：从项目源码开始构建`
+1.git clone https://github.com/hubtoks/React-Blog.git
+2.cd React-Blog
+2.npm i 安装依赖，如有报错，请使用npm i --force进行安装
+3.npm start启动项目，初次启动可能较慢，请耐心等待构建完成后，访问localhost:3000即可
 
-In the project directory, you can run:
+### `方法二：使用预先构建好的版本`
+
+
 
 ### `npm start`
 
