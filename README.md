@@ -1,4 +1,4 @@
-# React+Antd构建的博客后台管理系统
+# React+Antd构建的笔记程序
 
 ## 本项目使用Create React App进行初始化
 
